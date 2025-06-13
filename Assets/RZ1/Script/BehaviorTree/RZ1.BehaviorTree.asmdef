@@ -1,0 +1,14 @@
+{
+    "name": "RZ1.BehaviorTree",
+    "rootNamespace": "RZ1.BehaviorTree",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
