@@ -126,12 +126,14 @@ public class InventorySystem : NetworkBehaviour
         }
 
         if (networkCurrentIndex.Value >= 0 &&
+            networkCurrentIndex.Value < networkInventory.Count &&
             networkInventory[networkCurrentIndex.Value].TryGet(out NetworkObject activeObj))
         {
             var activeItem = activeObj.GetComponent<ItemBase>();
             activeItem.PickUp(handSocket);
         }
     }
+
 
     [ServerRpc]
     private void SwitchItemRequestServerRpc(int direction)
