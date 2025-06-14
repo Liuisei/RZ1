@@ -1284,6 +1284,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1902866784037127595, guid: 3e1499c467f7e25418f17186add31b80, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5871912790860088334, guid: 3e1499c467f7e25418f17186add31b80, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1328,7 +1332,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: Eye
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1902866784037127595, guid: 3e1499c467f7e25418f17186add31b80, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
@@ -1359,6 +1364,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _aiTransform: {fileID: 2747227270887211300}
+  angle: 30
+  speed: 1
+  distance: 10
 --- !u!195 &6391911778756271385 stripped
 NavMeshAgent:
   m_CorrespondingSourceObject: {fileID: 6529124752188181610, guid: d93464de93ba9da4cb6de87505b0fe80, type: 3}
