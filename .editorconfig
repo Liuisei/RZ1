@@ -1,0 +1,14 @@
+# このファイルをルートとして扱い、上位階層の .editorconfig を無視する
+root = true
+
+# -----------------------------------------
+# デフォルト設定（すべてのファイルに適用）
+# -----------------------------------------
+[*.cs]
+charset = utf-8                        # 文字コードはUTF-8（BOMなし）
+end_of_line = crlf                    # 改行コードはCRLF（Windows標準）
+insert_final_newline = false          # ファイル末尾に改行を追加しない
+indent_style = space                  # インデントはタブではなくスペース
+indent_size = 4                       # インデント幅は4スペース
+tab_width = 4                         # タブ幅（表示上）も4スペースに統一
+trim_trailing_whitespace = true       # 行末の空白は自動で削除
