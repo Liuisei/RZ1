@@ -18,7 +18,7 @@ public class Title : MonoBehaviour
         //ホストに接続
         bool result = NetworkManager.Singleton.StartClient();
     }
-    
+
     /// <summary>
     /// 接続承認関数
     /// </summary>
@@ -46,8 +46,10 @@ public class Title : MonoBehaviour
         response.PlayerPrefabHash = null;
 
         //PlayerObjectをスポーンする位置(nullの場合Vector3.zero)
-        var position = new Vector3(0, 1, -8);
-        position.x = -5 + 5 * (NetworkManager.Singleton.ConnectedClients.Count % 3);
+        var position = new Vector3(-11, 1.2f, -92f)
+        {
+            x = -5 + 5 * (NetworkManager.Singleton.ConnectedClients.Count % 3)
+        };
         response.Position = position;
 
         //PlayerObjectをスポーン時の回転 (nullの場合Quaternion.identity)
