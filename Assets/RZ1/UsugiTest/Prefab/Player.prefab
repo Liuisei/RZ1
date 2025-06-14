@@ -299,6 +299,7 @@ GameObject:
   - component: {fileID: 7261483462085214124}
   - component: {fileID: 2340927722974370867}
   - component: {fileID: 1322205635966927940}
+  - component: {fileID: 4248059251945358481}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -454,6 +455,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   m_moveSpeed: 5
+  m_jumpForce: 5
+  m_yawRotation: 0
 --- !u!114 &1322205635966927940
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -466,8 +469,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9a7715e8a631a248b1f8d398bfea429, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   handSocket: {fileID: 2411392072045530452}
   playerCamera: {fileID: 3158559088427386100}
+--- !u!114 &4248059251945358481
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6919621502673672879}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1f2472934c4d6d64bb23a89ce666457e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  maxHealth: 100
 --- !u!1 &8081323817706111574
 GameObject:
   m_ObjectHideFlags: 0
