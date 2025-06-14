@@ -4,13 +4,15 @@ using UnityEngine;
 public class PlayerMover : NetworkBehaviour
 {
     [SerializeField] float m_moveSpeed = 5f;
+    [SerializeField] float m_jumpForce = 5f;
     private Rigidbody m_rigidBody;
 
     private Vector2 m_moveInput = Vector2.zero;
     [SerializeField] private float m_yawRotation = 0f;
 
-    // クライアント内で毎フレーム更新される
     private float clientYawRotation = 0f;
+
+    private bool isGrounded = true;
 
     void Start()
     {
@@ -29,8 +31,9 @@ public class PlayerMover : NetworkBehaviour
         {
             float inputX = Input.GetAxisRaw("Horizontal");
             float inputY = Input.GetAxisRaw("Vertical");
+            bool jumpInput = Input.GetKey(KeyCode.Space);
 
-            SetMoveInputServerRpc(inputX, inputY, clientYawRotation);
+            SetMoveInputServerRpc(inputX, inputY, clientYawRotation, jumpInput);
         }
 
         if (IsServer)
@@ -40,15 +43,20 @@ public class PlayerMover : NetworkBehaviour
     }
 
     [ServerRpc]
-    private void SetMoveInputServerRpc(float x, float y, float yaw)
+    private void SetMoveInputServerRpc(float x, float y, float yaw, bool jump)
     {
         m_moveInput = new Vector2(x, y);
         m_yawRotation = yaw;
+
+        if (jump && isGrounded)
+        {
+            m_rigidBody.AddForce(Vector3.up * m_jumpForce, ForceMode.VelocityChange);
+            isGrounded = false;
+        }
     }
 
     private void ServerUpdate()
     {
-        // サーバー側は送られてきたYawを基準に移動方向を決定
         Quaternion rotation = Quaternion.Euler(0f, m_yawRotation, 0f);
         transform.rotation = rotation;
 
@@ -60,9 +68,14 @@ public class PlayerMover : NetworkBehaviour
         m_rigidBody.linearVelocity = velocity;
     }
 
-    // クライアントからカメラLook経由で受け取る
     public void SetYaw(float yaw)
     {
         clientYawRotation = yaw;
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        // 簡易的に「何かに当たったら着地扱い」
+        isGrounded = true;
     }
 }

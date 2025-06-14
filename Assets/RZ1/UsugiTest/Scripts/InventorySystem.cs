@@ -7,16 +7,25 @@ public class InventorySystem : NetworkBehaviour
     [SerializeField] private Transform handSocket;
     [SerializeField] private Camera playerCamera;
 
-    private NetworkList<NetworkObjectReference> networkInventory;
-    private NetworkVariable<int> networkCurrentIndex = new NetworkVariable<int>(-1);
+    private const int MaxInventorySize = 10;
+    private static readonly Vector3 HiddenPosition = new Vector3(0, -9999f, 0);
 
-    void Awake()
-    {
-        networkInventory = new NetworkList<NetworkObjectReference>();
-    }
+    private NetworkList<NetworkObjectReference> networkInventory =
+        new NetworkList<NetworkObjectReference>();
+
+    private NetworkVariable<int> networkCurrentIndex = new(
+        -1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    public int CurrentIndex => networkCurrentIndex.Value;
 
     public override void OnNetworkSpawn()
     {
+        if (IsServer)
+        {
+            for (int i = 0; i < MaxInventorySize; i++)
+            {
+                networkInventory.Add(default);
+            }
+        }
         networkInventory.OnListChanged += OnInventoryChanged;
         networkCurrentIndex.OnValueChanged += (prev, next) => EquipCurrent();
     }
@@ -24,65 +33,79 @@ public class InventorySystem : NetworkBehaviour
     void Update()
     {
         if (!IsOwner) return;
-
         HandleInput();
     }
+
+    public InventoryItemData GetSlot(int index)
+    {
+        if (index < 0 || index >= networkInventory.Count)
+            return null;
+
+        if (networkInventory[index].Equals(default))
+            return null;
+
+        if (networkInventory[index].TryGet(out NetworkObject obj))
+        {
+            return new InventoryItemData { ItemName = obj.name };
+        }
+
+        return null;
+    }
+
 
     private void HandleInput()
     {
         if (Input.GetMouseButtonDown(0))
         {
-            if (networkCurrentIndex.Value == -1)
-            {
-                TryPickUp();
-            }
-            else
-            {
-                UseItem();
-            }
+            Vector3 origin = playerCamera.transform.position;
+            Vector3 direction = playerCamera.transform.forward;
+            RequestPickUpServerRpc(origin, direction);
+        }
+
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            UseItem();
         }
 
         float scroll = Input.GetAxis("Mouse ScrollWheel");
         if (scroll != 0)
         {
-            SwitchItem(scroll > 0 ? 1 : -1);
+            SwitchItemRequestServerRpc(scroll > 0 ? 1 : -1);
         }
 
-        if (Input.GetKeyDown(KeyCode.Q) && networkCurrentIndex.Value != -1)
+        if (Input.GetKeyDown(KeyCode.Q))
         {
-            DropItemServerRpc();
-        }
-    }
-
-    private void TryPickUp()
-    {
-        Ray ray = playerCamera.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2));
-        if (Physics.Raycast(ray, out RaycastHit hit, 3f))
-        {
-            ItemBase item = hit.collider.GetComponent<ItemBase>();
-            if (item != null)
-            {
-                PickupItemServerRpc(item.NetworkObject.NetworkObjectId);
-            }
+            DropItemRequestServerRpc();
         }
     }
 
     [ServerRpc]
-    private void PickupItemServerRpc(ulong networkObjectId)
+    private void RequestPickUpServerRpc(Vector3 origin, Vector3 direction)
     {
-        var itemObj = NetworkManager.Singleton.SpawnManager.SpawnedObjects[networkObjectId];
-        if (itemObj.TryGetComponent<ItemBase>(out var item))
+        if (Physics.Raycast(origin, direction, out RaycastHit hit, 3f))
         {
-            item.NetworkObject.ChangeOwnership(OwnerClientId);
-            networkInventory.Add(item.NetworkObject);
-            networkCurrentIndex.Value = networkInventory.Count - 1;
+            if (hit.collider.TryGetComponent<ItemBase>(out var item))
+            {
+                int targetSlot = networkCurrentIndex.Value;
+
+                if (targetSlot < 0 || targetSlot >= networkInventory.Count)
+                {
+                    networkCurrentIndex.Value = 0;
+                    targetSlot = 0;
+                }
+
+                if (networkInventory[targetSlot].Equals(default))
+                {
+                    item.NetworkObject.ChangeOwnership(OwnerClientId);
+                    networkInventory[targetSlot] = item.NetworkObject;
+                }
+            }
         }
     }
 
     private void UseItem()
     {
-        if (networkCurrentIndex.Value < 0 || networkCurrentIndex.Value >= networkInventory.Count) return;
-
+        if (networkCurrentIndex.Value < 0) return;
         if (networkInventory[networkCurrentIndex.Value].TryGet(out NetworkObject itemObj))
         {
             var item = itemObj.GetComponent<ItemBase>();
@@ -92,82 +115,62 @@ public class InventorySystem : NetworkBehaviour
 
     private void EquipCurrent()
     {
-        // クライアントは読み取りだけ
-        if (!IsServer)
+        for (int i = 0; i < networkInventory.Count; i++)
         {
-            if (networkInventory.Count == 0 || networkCurrentIndex.Value >= networkInventory.Count)
-            {
-                return;
-            }
-        }
-        else
-        {
-            // サーバーだけがindex補正・修正を行う
-            if (networkInventory.Count == 0)
-            {
-                networkCurrentIndex.Value = -1;
-                return;
-            }
-            if (networkCurrentIndex.Value >= networkInventory.Count)
-            {
-                networkCurrentIndex.Value = networkInventory.Count - 1;
-            }
-        }
-
-        foreach (var reference in networkInventory)
-        {
-            if (reference.TryGet(out NetworkObject obj))
+            if (networkInventory[i].TryGet(out NetworkObject obj))
             {
                 var item = obj.GetComponent<ItemBase>();
                 item.SetHidden(true);
+                obj.transform.position = HiddenPosition;
             }
         }
 
-        if (networkCurrentIndex.Value >= 0)
+        if (networkCurrentIndex.Value >= 0 &&
+            networkInventory[networkCurrentIndex.Value].TryGet(out NetworkObject activeObj))
         {
-            var reference = networkInventory[networkCurrentIndex.Value];
-            if (reference.TryGet(out NetworkObject obj))
-            {
-                var item = obj.GetComponent<ItemBase>();
-                item.PickUp(handSocket);
-            }
+            var activeItem = activeObj.GetComponent<ItemBase>();
+            activeItem.PickUp(handSocket);
         }
     }
 
-
-    private void SwitchItem(int direction)
+    [ServerRpc]
+    private void SwitchItemRequestServerRpc(int direction)
     {
         if (networkInventory.Count == 0) return;
 
-        var nextIndex = (networkCurrentIndex.Value + direction + networkInventory.Count) % networkInventory.Count;
+        int nextIndex = (networkCurrentIndex.Value + direction + networkInventory.Count) % networkInventory.Count;
         networkCurrentIndex.Value = nextIndex;
     }
 
     [ServerRpc]
-    private void DropItemServerRpc()
+    private void DropItemRequestServerRpc()
     {
-        if (networkCurrentIndex.Value < 0 || networkCurrentIndex.Value >= networkInventory.Count) return;
+        if (networkCurrentIndex.Value < 0) return;
+        if (!networkInventory[networkCurrentIndex.Value].TryGet(out NetworkObject obj)) return;
 
-        if (networkInventory[networkCurrentIndex.Value].TryGet(out NetworkObject obj))
+        var item = obj.GetComponent<ItemBase>();
+
+        Vector3 dropStart = handSocket.position + transform.forward * 1.0f + Vector3.up * 0.5f;
+        Vector3 dropPosition = dropStart;
+
+        if (Physics.Raycast(dropStart, Vector3.down, out RaycastHit hit, 10f))
         {
-            var item = obj.GetComponent<ItemBase>();
-
-            Vector3 dropStart = handSocket.position + transform.forward * 1.0f + Vector3.up * 0.5f;
-            Vector3 dropPosition = dropStart;
-
-            if (Physics.Raycast(dropStart, Vector3.down, out RaycastHit hit, 10f))
-            {
-                dropPosition = hit.point + Vector3.up * 1f;
-            }
-
-            item.Drop(dropPosition);
-            networkInventory.RemoveAt(networkCurrentIndex.Value);
-
-            if (networkInventory.Count == 0)
-                networkCurrentIndex.Value = -1;
-            else
-                networkCurrentIndex.Value %= networkInventory.Count;
+            dropPosition = hit.point + Vector3.up * 1f;
         }
+
+        item.Drop(dropPosition);
+        obj.ChangeOwnership(NetworkManager.ServerClientId);
+        networkInventory[networkCurrentIndex.Value] = default;
+        networkCurrentIndex.Value = FindNextAvailableSlot();
+    }
+
+    private int FindNextAvailableSlot()
+    {
+        for (int i = 0; i < networkInventory.Count; i++)
+        {
+            if (!networkInventory[i].Equals(default)) return i;
+        }
+        return -1;
     }
 
     private void OnInventoryChanged(NetworkListEvent<NetworkObjectReference> change)
@@ -175,3 +178,10 @@ public class InventorySystem : NetworkBehaviour
         EquipCurrent();
     }
 }
+
+public class InventoryItemData
+{
+    public string ItemName;
+}
+
+
