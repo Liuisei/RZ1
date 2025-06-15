@@ -10,7 +10,7 @@ namespace RZ1.BehaviorTree
         private Vector3 _position;
         private bool _forcus;
 
-        private float _speed = 5f; // Speed of the AI movement, can be adjusted as needed
+        //private float _speed = 5f; // Speed of the AI movement, can be adjusted as needed
         private float _completDistance = 3f; // Distance to consider the movement complete
         private float _angleThreshold = 5f; // この角度以内なら回転しない
 
