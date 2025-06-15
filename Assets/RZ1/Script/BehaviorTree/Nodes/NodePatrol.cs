@@ -45,7 +45,7 @@ namespace RZ1.BehaviorTree
 
         public void Exit()
         {
-
+            _agent.isStopped = true;
         }
 
         public void Update()
