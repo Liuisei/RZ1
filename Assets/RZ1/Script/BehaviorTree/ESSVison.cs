@@ -102,8 +102,14 @@ public class ESSVison : MonoBehaviour, IBehaviorEnvironmentSearch
         if (Physics.Raycast(transform.position, transform.forward, out RaycastHit hit, distance))
         {
             string tag = hit.collider.tag;
-            Debug.DrawLine(transform.position, hit.point, Color.red);
-            Debug.Log($"Hit:{hit.collider.name} Tag:{hit.collider.tag}");
+
+            if(tag == "Player")
+            {
+                Debug.Log("Playerを発見！");
+            }
+            Color lineColor = (tag == "Player") ? Color.red : Color.blue;
+
+            Debug.DrawLine(transform.position, hit.point, lineColor);
         }
         else
         {
