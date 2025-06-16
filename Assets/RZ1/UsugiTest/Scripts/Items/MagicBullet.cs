@@ -8,19 +8,9 @@ public class MagicBullet : NetworkBehaviour
     [SerializeField] private float speed = 10f;
     [SerializeField] private float lifeTime = 5f;
     [SerializeField] private int damage = 20;
-    private Vector3 Direction { get; set; }
+    public Vector3 Direction { get; set; }
 
     private float elapsedTime = 0f;
-
-    private void Start()
-    {
-        if (IsServer)
-        {
-            // 初期化
-            elapsedTime = 0f;
-            Direction = FindObjectsByType<Camera>(sortMode: FindObjectsSortMode.None).First(x => x.isActiveAndEnabled).transform.forward;
-        }
-    }
 
     private void Update()
     {
@@ -36,10 +26,9 @@ public class MagicBullet : NetworkBehaviour
         {
             foreach (var hit in hits)
             {
-                Debug.Log($"Hit: {hit.collider.gameObject.name} Tag: {hit.collider.tag}");
-
-                if (hit.collider.TryGetComponent(out HealthSystem health))
+                if (hit.collider.transform.parent.TryGetComponent(out HealthSystem health))
                 {
+                    Debug.Log($"Bullet hit {health.OwnerClientId} with damage {damage}");
                     health.TakeDamageServerRpc(damage);
                     DespawnBullet();
                     return; // 最初のHealthSystemに当たった時点で終了
