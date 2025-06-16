@@ -10,13 +10,15 @@ public class CameraLook : NetworkBehaviour
     private float yawRotation = 0f;
 
     public PlayerMover playerMover;
+    public Camera playerCamera { get; private set; }
 
     void Start()
     {
+        playerCamera = playerCameraTransform.GetComponent<Camera>();
         // 自分のカメラだけ有効
         if (!IsOwner)
         {
-            playerCameraTransform.GetComponent<Camera>().enabled = false;
+            playerCamera.enabled = false;
             var audioListener = playerCameraTransform.GetComponent<AudioListener>();
             if (audioListener != null) audioListener.enabled = false;
             enabled = false;
