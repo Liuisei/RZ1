@@ -1,4 +1,6 @@
+using Cysharp.Threading.Tasks;
 using System;
+using System.Threading;
 using UnityEngine;
 
 public class ESSVison : MonoBehaviour, IBehaviorEnvironmentSearch
@@ -14,11 +16,32 @@ public class ESSVison : MonoBehaviour, IBehaviorEnvironmentSearch
     public float distance = 10f;
     private Color rayColor = Color.green;
 
+    // UniTask関連
+    private UniTaskCompletionSource<string> _detectionCompletionSource;
+    private CancellationTokenSource _cancellationTokenSource;
+    private bool _isDetecting = false;
+
     // このオブジェクトのローカル回転オフセット（首振り用）
     private Vector3 _swingOffset = Vector3.zero;
 
-#if UNITY_EDITOR
+    // 縦振り用変数
+    bool _upDawnSwingIsUp = true;
+    private float _currentVerticalOffset = 0f; // 現在の縦方向オフセット
 
+    // 首振り判定用変数
+    private float _lastOffset = 0f;
+    private bool _hasReachedNegative = false;
+    private bool _hasReachedPositive = false;
+
+    private bool _serchIsRunning = false; // 検索が実行中かどうかのフラグ
+
+    private void OnDestroy()
+    {
+        _cancellationTokenSource?.Cancel();
+        _cancellationTokenSource?.Dispose();
+    }
+
+#if UNITY_EDITOR
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
@@ -88,11 +111,11 @@ public class ESSVison : MonoBehaviour, IBehaviorEnvironmentSearch
         Gizmos.DrawLine(leftUpEnd, leftDownEnd);
         Gizmos.DrawLine(rightUpEnd, rightDownEnd);
     }
-
 #endif
 
     private void Update()
     {
+        if (_serchIsRunning == false) return;
         RayCastVision();
         LeftRightSwing();
     }
@@ -103,12 +126,21 @@ public class ESSVison : MonoBehaviour, IBehaviorEnvironmentSearch
         {
             string tag = hit.collider.tag;
 
-            if(tag == "Player")
+            if (tag == "Player")
             {
                 Debug.Log("Playerを発見！");
-            }
-            Color lineColor = (tag == "Player") ? Color.red : Color.blue;
 
+                // UniTaskで通知
+                if (_isDetecting && _detectionCompletionSource != null && !_detectionCompletionSource.Task.Status.IsCompleted())
+                {
+                    _detectionCompletionSource.TrySetResult(tag);
+                }
+
+                // 従来のイベント通知も実行
+                OnTagHit?.Invoke(tag);
+            }
+
+            Color lineColor = (tag == "Player") ? Color.red : Color.blue;
             Debug.DrawLine(transform.position, hit.point, lineColor);
         }
         else
@@ -131,11 +163,6 @@ public class ESSVison : MonoBehaviour, IBehaviorEnvironmentSearch
 
         if (CheckLeftRightSwingGoal(horizontalOffset)) UpDawnSwing();
     }
-
-    // 追加する変数（クラスのフィールドとして追加）
-    private float _lastOffset = 0f;
-    private bool _hasReachedNegative = false;
-    private bool _hasReachedPositive = false;
 
     /// <summary>
     /// 一往復したらゴール判定
@@ -170,9 +197,6 @@ public class ESSVison : MonoBehaviour, IBehaviorEnvironmentSearch
         return false; // まだゴール未到達
     }
 
-    bool _upDawnSwingIsUp = true;
-    private float _currentVerticalOffset = 0f; // 現在の縦方向オフセット
-
     /// <summary>
     /// CheckLeftRightSwingGoal でゴールに到達したら、変化する
     /// </summary>
@@ -205,5 +229,151 @@ public class ESSVison : MonoBehaviour, IBehaviorEnvironmentSearch
 
         // 注意: UpDawnSwingは単独では回転を適用しない
         // LeftRightSwingで一緒に適用される
+    }
+
+    /// <summary>
+    /// 敵を発見するまで待機するUniTask
+    /// </summary>
+    /// <param name="cancellationToken">キャンセルトークン</param>
+    /// <returns>発見した敵のタグ名</returns>
+    public async UniTask<string> WaitForEnemyDetectionAsync(CancellationToken cancellationToken = default)
+    {
+        // 既に検出中の場合は既存のタスクを返す
+        if (_isDetecting && _detectionCompletionSource != null && !_detectionCompletionSource.Task.Status.IsCompleted())
+        {
+            return await _detectionCompletionSource.Task;
+        }
+
+        _isDetecting = true;
+        _detectionCompletionSource = new UniTaskCompletionSource<string>();
+
+        try
+        {
+            // キャンセレーションと検出完了の両方を待つ
+            var result = await _detectionCompletionSource.Task.AttachExternalCancellation(cancellationToken);
+            return result;
+        }
+        finally
+        {
+            _isDetecting = false;
+        }
+    }
+
+    /// <summary>
+    /// 特定のタグを持つ敵を発見するまで待機するUniTask
+    /// </summary>
+    /// <param name="targetTag">検出したいタグ名</param>
+    /// <param name="cancellationToken">キャンセルトークン</param>
+    /// <returns>発見した場合はtrue</returns>
+    public async UniTask<bool> WaitForSpecificEnemyAsync(string targetTag, CancellationToken cancellationToken = default)
+    {
+        var tcs = new UniTaskCompletionSource<bool>();
+
+        // 一時的なイベントハンドラを作成
+        Action<string> tempHandler = null;
+        tempHandler = (detectedTag) =>
+        {
+            if (detectedTag == targetTag)
+            {
+                OnTagHit -= tempHandler; // イベント解除
+                tcs.TrySetResult(true);
+            }
+        };
+
+        // イベントに登録
+        OnTagHit += tempHandler;
+
+        try
+        {
+            // キャンセレーション対応
+            cancellationToken.Register(() =>
+            {
+                OnTagHit -= tempHandler;
+                tcs.TrySetCanceled();
+            });
+
+            return await tcs.Task;
+        }
+        catch (OperationCanceledException)
+        {
+            OnTagHit -= tempHandler; // 念のため再度解除
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// 検出を停止する
+    /// </summary>
+    public void StopDetection()
+    {
+        if (_detectionCompletionSource != null && !_detectionCompletionSource.Task.Status.IsCompleted())
+        {
+            _detectionCompletionSource.TrySetCanceled();
+        }
+        _isDetecting = false;
+    }
+
+    /// <summary>
+    /// 複数のタグのいずれかを発見するまで待機するUniTask
+    /// </summary>
+    /// <param name="targetTags">検出したいタグ名の配列</param>
+    /// <param name="cancellationToken">キャンセルトークン</param>
+    /// <returns>発見したタグ名、見つからない場合はnull</returns>
+    public async UniTask<string> WaitForAnyEnemyAsync(string[] targetTags, CancellationToken cancellationToken = default)
+    {
+        var tcs = new UniTaskCompletionSource<string>();
+
+        // 一時的なイベントハンドラを作成
+        Action<string> tempHandler = null;
+        tempHandler = (detectedTag) =>
+        {
+            // 配列内のタグをチェック
+            for (int i = 0; i < targetTags.Length; i++)
+            {
+                if (detectedTag == targetTags[i])
+                {
+                    OnTagHit -= tempHandler;
+                    tcs.TrySetResult(detectedTag);
+                    return;
+                }
+            }
+        };
+
+        OnTagHit += tempHandler;
+
+        try
+        {
+            cancellationToken.Register(() =>
+            {
+                OnTagHit -= tempHandler;
+                tcs.TrySetCanceled();
+            });
+
+            return await tcs.Task;
+        }
+        catch (OperationCanceledException)
+        {
+            OnTagHit -= tempHandler;
+            return null;
+        }
+    }
+
+    public void SearchEnvironment()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void StopSearch()
+    {
+        _serchIsRunning = false;
+        _cancellationTokenSource?.Cancel(); // 検索を停止
+        _cancellationTokenSource?.Dispose(); // リソースを解放
+        _cancellationTokenSource = new CancellationTokenSource(); // 新しいトークンソースを作成
+    }
+
+    public void StartSearch()
+    {
+        _serchIsRunning = true;
+        _cancellationTokenSource = new CancellationTokenSource();
     }
 }

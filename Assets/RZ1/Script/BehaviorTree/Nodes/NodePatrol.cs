@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using System;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AI;
@@ -6,7 +7,8 @@ using UnityEngine.ResourceManagement;
 
 namespace RZ1.BehaviorTree
 {
-    public class NodePatrol : IBehaviorNodeUpdate
+    [Serializable]
+    public class NodePatrol : IBehaviorNode, IBehaviorUpdate
     {
 
         private Transform[] _points; // パトロール地点の配列
@@ -22,6 +24,7 @@ namespace RZ1.BehaviorTree
         }
         public void Enter()
         {
+            Debug.Log("Entering NodePatrol with " + _points.Length + " points.");
             if (_points.Length == 0)
             {
                 Debug.LogWarning("No patrol points set. Exiting patrol node.");
@@ -45,7 +48,7 @@ namespace RZ1.BehaviorTree
 
         public void Exit()
         {
-
+            _agent.isStopped = true;
         }
 
         public void Update()
