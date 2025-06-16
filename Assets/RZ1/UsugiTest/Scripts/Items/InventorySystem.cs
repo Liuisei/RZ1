@@ -9,12 +9,9 @@ public class InventorySystem : NetworkBehaviour
 
     private const int MaxInventorySize = 10;
     private static readonly Vector3 HiddenPosition = new Vector3(0, -9999f, 0);
+    private NetworkList<NetworkObjectReference> networkInventory = new();
+    private NetworkVariable<int> networkCurrentIndex = new();
 
-    private NetworkList<NetworkObjectReference> networkInventory =
-        new NetworkList<NetworkObjectReference>();
-
-    private NetworkVariable<int> networkCurrentIndex = new(
-        -1, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     public int CurrentIndex => networkCurrentIndex.Value;
 
     public override void OnNetworkSpawn()
@@ -84,21 +81,20 @@ public class InventorySystem : NetworkBehaviour
     {
         if (Physics.Raycast(origin, direction, out RaycastHit hit, 3f))
         {
-            if (hit.collider.TryGetComponent<ItemBase>(out var item))
+            var itemBase = hit.collider.GetComponent<ItemBase>() ?? hit.collider.GetComponentInParent<ItemBase>();
+            if (!itemBase) return;
+            var targetSlot = networkCurrentIndex.Value;
+
+            if (targetSlot < 0 || targetSlot >= networkInventory.Count)
             {
-                int targetSlot = networkCurrentIndex.Value;
+                networkCurrentIndex.Value = 0;
+                targetSlot = 0;
+            }
 
-                if (targetSlot < 0 || targetSlot >= networkInventory.Count)
-                {
-                    networkCurrentIndex.Value = 0;
-                    targetSlot = 0;
-                }
-
-                if (networkInventory[targetSlot].Equals(default))
-                {
-                    item.NetworkObject.ChangeOwnership(OwnerClientId);
-                    networkInventory[targetSlot] = item.NetworkObject;
-                }
+            if (networkInventory[targetSlot].Equals(default))
+            {
+                itemBase.NetworkObject.ChangeOwnership(OwnerClientId);
+                networkInventory[targetSlot] = itemBase.NetworkObject;
             }
         }
     }

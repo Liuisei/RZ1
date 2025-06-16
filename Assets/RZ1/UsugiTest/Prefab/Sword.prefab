@@ -123,7 +123,6 @@ GameObject:
   - component: {fileID: 5475134519650367049}
   - component: {fileID: 6712426938820448946}
   - component: {fileID: 5350689832906262272}
-  - component: {fileID: 6254677939345818263}
   - component: {fileID: 8737335749388533940}
   - component: {fileID: 2116092142707939955}
   m_Layer: 0
@@ -195,7 +194,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   animator: {fileID: 2116092142707939955}
-  attackOriginSocket: {fileID: 0}
 --- !u!114 &5475134519650367049
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -286,29 +284,6 @@ MonoBehaviour:
   UseRigidBodyForMotion: 0
   AutoUpdateKinematicState: 1
   AutoSetKinematicOnDespawn: 1
---- !u!136 &6254677939345818263
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8160718457955474498}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 1
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &8737335749388533940
 MonoBehaviour:
   m_ObjectHideFlags: 0
