@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -11,7 +12,17 @@ namespace RZ1.BehaviorTree
     {
         [SerializeField] NavMeshAgent _aiagent;
         [SerializeField] ESSVison _essVison;
-        private IBehaviorNodeUpdate _currentNodeUpdate;
+        private IBehaviorUpdate _currentNodeUpdate;
+        private IBehaviorNode _currentNode;
+
+        [Header("Bullet")]
+        [SerializeField] BulletLiu _bulletPrefab;
+        [SerializeField] Transform _bulletSpawnPoint;
+        [SerializeField] float _bulletSpeed = 10f;
+        [SerializeField] float _bulletLifeTime = 3f;
+        [SerializeField] float _bulletDamage = 10f;
+
+        NodePatrol _nodePatrol;
 
         void Start()
         {
@@ -36,24 +47,30 @@ namespace RZ1.BehaviorTree
             _essVison.StartSearch();
             var cts = new CancellationTokenSource();
 
-            NodePatrol nodePatrol = new NodePatrol(_aiagent, PatrolPositionManager.I.patrolPositions, false);
-            nodePatrol.Enter();
-            _currentNodeUpdate = nodePatrol;
+
+            _nodePatrol = new NodePatrol(_aiagent, PatrolPositionManager.I.patrolPositions, false);
+            _nodePatrol.Enter();
+            _currentNodeUpdate = _nodePatrol;
+            _currentNode = _nodePatrol;
+
             string[] targets = new string[] { "Player" };
             var detectedTag = await _essVison.WaitForAnyEnemyAsync(targets, cts.Token);
             if (!string.IsNullOrEmpty(detectedTag))
             {
-                _currentNodeUpdate.Exit();
+                _currentNode.Exit();
                 _currentNodeUpdate = null;
                 _essVison.StopSearch();
-                Foundenemy();
+                Foundenemy().Forget();
             }
         }
 
-        void Foundenemy()
+        async UniTask Foundenemy()
         {
+            TaskFire taskFire = new TaskFire(_bulletPrefab, _bulletSpawnPoint, new List<string> { "Player" }, _bulletLifeTime, _bulletDamage, _bulletSpeed);
+            taskFire.Enter();
+            await UniTask.Delay(1000); // Simulate some delay for firing
+            Defult().Forget();
             Debug.Log("Enemy found! Switching behavior.");
-
         }
 
         private void Update()
