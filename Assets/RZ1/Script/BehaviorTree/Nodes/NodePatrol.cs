@@ -24,6 +24,8 @@ namespace RZ1.BehaviorTree
         }
         public void Enter()
         {
+            _agent.isStopped = false;
+
             Debug.Log("Entering NodePatrol with " + _points.Length + " points.");
             if (_points.Length == 0)
             {
