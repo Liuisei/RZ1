@@ -1,11 +1,25 @@
 {
   "dependencies": {
+    "com.community.netcode.transport.steamnetworkingsockets": {
+      "version": "https://github.com/Unity-Technologies/multiplayer-community-contributions.git?path=/Transports/com.community.netcode.transport.steamnetworkingsockets",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "5cea8f048cc16f3575fabcf03af3ebafbc390499"
+    },
     "com.cysharp.unitask": {
       "version": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",
       "depth": 0,
       "source": "git",
       "dependencies": {},
       "hash": "f213ff497e4ff462a77319cf677cf20cc0860ca9"
+    },
+    "com.rlabrecque.steamworks.net": {
+      "version": "https://github.com/rlabrecque/Steamworks.NET.git?path=/com.rlabrecque.steamworks.net",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "6b097c14dcf52cf139c79f8d882e5c87a4a6efb7"
     },
     "com.unity.addressables": {
       "version": "2.5.0",
