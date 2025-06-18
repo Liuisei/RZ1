@@ -1,3 +1,5 @@
+using Steamworks;
+using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -7,7 +9,8 @@ public class MainPage : MonoBehaviour
 {
     [SerializeField] Button _hostButton;
     [SerializeField] Button _joinButton;
-
+    [SerializeField] TMP_InputField m_joinLobbyID;
+    private CallResult<LobbyCreated_t> m_crLobbyCreated;
     private void Awake()
     {
         _hostButton.onClick.AddListener(OnHostButtonClicked);
@@ -16,14 +19,15 @@ public class MainPage : MonoBehaviour
     #region Button Event Handlers
     private void OnHostButtonClicked()
     {
-        //ホスト開始
-        NetworkManager.Singleton.StartHost();
-        //シーンを切り替え
-        NetworkManager.Singleton.SceneManager.LoadScene("Home", LoadSceneMode.Single);
+        SteamLobby.Instance.CreateLobby();
     }
     private void OnJoinButtonClicked()
     {
-        NetworkManager.Singleton.StartClient();
+        SteamLobby.Instance.JoinLobby((CSteamID)ulong.Parse(m_joinLobbyID.text));
     }
     #endregion
+
+
+
+
 }
