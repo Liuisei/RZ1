@@ -16,6 +16,8 @@ public class SteamLobby : MonoBehaviour
 
     public ulong LobbyID { get; private set; }
 
+    [SerializeField] private string _lobbySceneName = "LiuGame";
+
     public void Start()
     {
         //SteamManagerの初期化が完了していたら
@@ -61,7 +63,9 @@ public class SteamLobby : MonoBehaviour
         //ホスト開始
         NetworkManager.Singleton.StartHost();
         //シーンを切り替え
-        NetworkManager.Singleton.SceneManager.LoadScene("Game", LoadSceneMode.Single);
+        NetworkManager.Singleton.SceneManager.LoadScene(_lobbySceneName, LoadSceneMode.Single);
+
+        Debug.Log($"ロビーを作成しました。ID: {LobbyID}");
     }
 
     /// <summary>
