@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 469345895956394657}
   m_Layer: 0
   m_Name: Camera
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -156,7 +156,7 @@ GameObject:
   - component: {fileID: 3619022170152834099}
   m_Layer: 0
   m_Name: Hand
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -190,7 +190,7 @@ GameObject:
   - component: {fileID: 5847986201073666122}
   m_Layer: 0
   m_Name: Eye
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -300,9 +300,10 @@ GameObject:
   - component: {fileID: 2340927722974370867}
   - component: {fileID: 1322205635966927940}
   - component: {fileID: 4248059251945358481}
+  - component: {fileID: 2845772398074755635}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -488,6 +489,21 @@ MonoBehaviour:
   maxHealth: 100
   currentHealth:
     m_InternalValue: 100
+--- !u!114 &2845772398074755635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6919621502673672879}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef0c00510c0edc042b37f7d405aa0b2c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  isLocalPlayer: 0
+  healthSystem: {fileID: 4248059251945358481}
 --- !u!1 &8081323817706111574
 GameObject:
   m_ObjectHideFlags: 0
@@ -502,7 +518,7 @@ GameObject:
   - component: {fileID: 7905336642983713209}
   m_Layer: 0
   m_Name: Model
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

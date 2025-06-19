@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-public class InventorySystem : NetworkBehaviour
+public class InventorySystem : NetworkBehaviour, IPlayerSystem
 {
     [SerializeField] private Transform handSocket;
     [SerializeField] private Camera playerCamera;
@@ -12,6 +12,7 @@ public class InventorySystem : NetworkBehaviour
     private NetworkList<NetworkObjectReference> networkInventory = new();
     private NetworkVariable<int> networkCurrentIndex = new();
 
+    private bool isDead = false;
     public int CurrentIndex => networkCurrentIndex.Value;
 
     public override void OnNetworkSpawn()
@@ -29,7 +30,7 @@ public class InventorySystem : NetworkBehaviour
 
     void Update()
     {
-        if (!IsOwner) return;
+        if (!IsOwner || isDead) return;
         HandleInput();
     }
 
@@ -174,6 +175,14 @@ public class InventorySystem : NetworkBehaviour
     private void OnInventoryChanged(NetworkListEvent<NetworkObjectReference> change)
     {
         EquipCurrent();
+    }
+
+    public void OnPlayerDeath()
+    {
+    }
+
+    public void OnPlayerRevive()
+    {
     }
 }
 

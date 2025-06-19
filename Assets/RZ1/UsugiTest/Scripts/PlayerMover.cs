@@ -1,7 +1,7 @@
 using Unity.Netcode;
 using UnityEngine;
 
-public class PlayerMover : NetworkBehaviour
+public class PlayerMover : NetworkBehaviour, IPlayerSystem
 {
     [SerializeField] float m_moveSpeed = 5f;
     [SerializeField] float m_jumpForce = 5f;
@@ -13,6 +13,7 @@ public class PlayerMover : NetworkBehaviour
     private float clientYawRotation = 0f;
 
     private bool isGrounded = true;
+    private bool isDead = false;
 
     void Start()
     {
@@ -27,7 +28,7 @@ public class PlayerMover : NetworkBehaviour
 
     void FixedUpdate()
     {
-        if (IsOwner)
+        if (IsOwner && !isDead)
         {
             float inputX = Input.GetAxisRaw("Horizontal");
             float inputY = Input.GetAxisRaw("Vertical");
@@ -77,5 +78,18 @@ public class PlayerMover : NetworkBehaviour
     {
         // 簡易的に「何かに当たったら着地扱い」
         isGrounded = true;
+    }
+
+    public void OnPlayerDeath()
+    {
+        isDead = true;
+    }
+
+    public void OnPlayerRevive()
+    {
+        isDead = false;
+        m_rigidBody.linearVelocity = Vector3.zero; // 速度をリセット
+        transform.position = Vector3.zero; // リスポーン位置を設定（必要に応じて変更）
+        m_yawRotation = 0f; // 向きをリセット
     }
 }
