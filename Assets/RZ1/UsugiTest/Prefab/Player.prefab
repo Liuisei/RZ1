@@ -142,7 +142,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  mouseSensitivity: 100
+  mouseSensitivity: 1
   playerCameraTransform: {fileID: 8119187312409913143}
   playerMover: {fileID: 2340927722974370867}
 --- !u!1 &2950492545369369768
@@ -486,6 +486,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   maxHealth: 100
+  currentHealth:
+    m_InternalValue: 100
 --- !u!1 &8081323817706111574
 GameObject:
   m_ObjectHideFlags: 0
