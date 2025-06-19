@@ -28,19 +28,20 @@ public class CameraLook : NetworkBehaviour
         Cursor.lockState = CursorLockMode.Locked;
     }
 
-    void FixedUpdate()
+    void Update() // FixedUpdateからUpdateに変更
     {
-        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
-        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
+        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity; // Time.deltaTimeを削除
+        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
 
         yawRotation += mouseX;
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-        // カメラ上下回転のみローカルで処理
+        // yawRotationの値を-180〜180の範囲に正規化
+        yawRotation = Mathf.Repeat(yawRotation + 180f, 360f) - 180f;
+
         playerCameraTransform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
-        // 毎フレームの回転角をPlayerMoverに伝える
         if (playerMover != null)
         {
             playerMover.SetYaw(yawRotation);
