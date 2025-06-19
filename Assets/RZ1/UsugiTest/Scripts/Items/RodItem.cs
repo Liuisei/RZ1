@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using UnityEngine;
 using Unity.Netcode;
 
@@ -10,6 +11,12 @@ public class RodItem : ItemBase
 
     private Camera cam;
     private float lastUseTime = -Mathf.Infinity;
+
+    private void Start()
+    {
+        var cams = FindObjectsByType<CameraLook>(FindObjectsSortMode.None);
+        cam = cams.First( x => x.IsOwner).GetComponent<Camera>();
+    }
 
     public override void Use()
     {
