@@ -6,22 +6,34 @@ public class RodItem : ItemBase
 {
     [SerializeField] private GameObject magicBulletPrefab;
     [SerializeField] private Transform firePoint;
+    [SerializeField] private float cooldownTime = 1.5f; // クールタイム秒数
+
     private Camera cam;
+    private float lastUseTime = -Mathf.Infinity;
 
     public override void Use()
     {
-        if (IsOwner)
+        if (!IsOwner) return;
+
+        if (Time.time - lastUseTime < cooldownTime)
         {
-            ShootRequestServerRpc();
+            Debug.Log("クールタイム中...");
+            return;
         }
+
+        lastUseTime = Time.time;
+        if (cam == null)
+            cam = GetComponentInChildren<Camera>();
+
+        // カメラの向きをサーバーに渡す
+        ShootRequestServerRpc(cam.transform.forward);
     }
 
     [ServerRpc]
-    private void ShootRequestServerRpc(ServerRpcParams rpcParams = default)
+    private void ShootRequestServerRpc(Vector3 shootDirection, ServerRpcParams rpcParams = default)
     {
-        cam = transform.parent.GetComponentInChildren<Camera>();
-        var bullet = Instantiate(magicBulletPrefab, firePoint.position, firePoint.rotation);
+        var bullet = Instantiate(magicBulletPrefab, firePoint.position, Quaternion.LookRotation(shootDirection));
         bullet.GetComponent<NetworkObject>().Spawn();
-        bullet.GetComponent<MagicBullet>().Direction = cam.transform.forward;
+        bullet.GetComponent<MagicBullet>().Direction = shootDirection;
     }
 }
