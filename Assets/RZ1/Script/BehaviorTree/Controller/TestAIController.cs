@@ -1,14 +1,13 @@
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Threading;
-using System.Threading.Tasks;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.UIElements;
 
 namespace RZ1.BehaviorTree
 {
-    public class TestAIController : MonoBehaviour
+    public class TestAIController : NetworkBehaviour
     {
         [SerializeField] NavMeshAgent _aiagent;
         [SerializeField] ESSVison _essVison;
@@ -26,6 +25,10 @@ namespace RZ1.BehaviorTree
 
         void Start()
         {
+            if (!IsServer)
+            {
+                return; // Only run on the server
+            }
             if (_essVison == null)
             {
                 Debug.LogError("ESSVison is not assigned in TestAIController.");
@@ -44,6 +47,7 @@ namespace RZ1.BehaviorTree
 
         async UniTask Defult()
         {
+            if (!IsServer) return;
             _essVison.StartSearch();
             var cts = new CancellationTokenSource();
 
@@ -66,6 +70,7 @@ namespace RZ1.BehaviorTree
 
         async UniTask Foundenemy()
         {
+            if (!IsServer) return;
             TaskFire taskFire = new TaskFire(_bulletPrefab, _bulletSpawnPoint, new List<string> { "Player" }, _bulletLifeTime, _bulletDamage, _bulletSpeed);
             taskFire.Enter();
             await UniTask.Delay(1000); // Simulate some delay for firing
@@ -75,6 +80,10 @@ namespace RZ1.BehaviorTree
 
         private void Update()
         {
+            if (!IsServer)
+            {
+                return; // Only run on the server
+            }
             if (_currentNodeUpdate != null)
             {
                 _currentNodeUpdate.Update();
