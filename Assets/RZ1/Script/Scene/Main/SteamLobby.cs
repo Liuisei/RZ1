@@ -17,6 +17,7 @@ public class SteamLobby : MonoBehaviour
     public ulong LobbyID { get; private set; }
 
     [SerializeField] private string _lobbySceneName = "LiuGame";
+    [SerializeField] private string _mainSceneName = "Main";
 
     public void Start()
     {
@@ -91,33 +92,36 @@ public class SteamLobby : MonoBehaviour
     /// <param name="callback"></param>
     private void OnLobbyEntered(LobbyEnter_t callback)
     {
-        //入室失敗時
-        if ((EChatRoomEnterResponse)callback.m_EChatRoomEnterResponse != EChatRoomEnterResponse.k_EChatRoomEnterResponseSuccess)
+        try
         {
-            return;
+            //入室失敗時
+            if ((EChatRoomEnterResponse)callback.m_EChatRoomEnterResponse != EChatRoomEnterResponse.k_EChatRoomEnterResponseSuccess)
+            {
+                return;
+            }
+
+            //ホストのSteamIDを取得
+            string hostAddress = SteamMatchmaking.GetLobbyData(new CSteamID(callback.m_ulSteamIDLobby),s_HostAddressKey);
+
+            //ホスト（CreateLobbyした本人）もここを通るのでクライアント接続しないようにリターン
+            if (hostAddress == SteamUser.GetSteamID().ToString()) { return; }
+
+            //ロビーID保存
+            LobbyID = callback.m_ulSteamIDLobby;
+
+            //Netcodeでクライアント接続
+            var stp = (SteamNetworkingSocketsTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
+            stp.ConnectToSteamID = ulong.Parse(hostAddress);
+            //ホストに接続
+            bool result = NetworkManager.Singleton.StartClient();
+
+            //切断時
+            NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnect;
         }
-
-        //ホストのSteamIDを取得
-        string hostAddress = SteamMatchmaking.GetLobbyData(
-            new CSteamID(callback.m_ulSteamIDLobby),
-            s_HostAddressKey);
-
-        //ホスト（CreateLobbyした本人）もここを通るのでクライアント接続しないようにリターン
-        if (hostAddress == SteamUser.GetSteamID().ToString()) { return; }
-
-        //ロビーID保存
-        LobbyID = callback.m_ulSteamIDLobby;
-
-        //Netcodeでクライアント接続
-        var stp = (SteamNetworkingSocketsTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
-        stp.ConnectToSteamID = ulong.Parse(hostAddress);
-
-        //ホストに接続
-        bool result = NetworkManager.Singleton.StartClient();
-        //切断時
-        NetworkManager.Singleton.OnClientDisconnectCallback += OnClientDisconnect;
-
-        Debug.Log($"SteamID{hostAddress}の部屋に接続");
+        catch (System.Exception e)
+        {
+            Debug.LogError($"OnLobbyEntered Error: {e.Message}\n{e.StackTrace}");
+        }
     }
 
     /// <summary>
@@ -163,7 +167,7 @@ public class SteamLobby : MonoBehaviour
         //ネットワークマネージャーを破棄（これで新しくNetworkManagerを作る（使う）ことができる）
         NetworkManager.Singleton.Shutdown();
         //メインシーンに戻る
-        SceneManager.LoadScene("Title");
+        SceneManager.LoadScene(_mainSceneName);
     }
 
     //簡易的なシングルトン
