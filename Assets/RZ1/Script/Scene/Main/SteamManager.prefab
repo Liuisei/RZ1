@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 9214506008772853397}
   - component: {fileID: 62861257947649340}
   - component: {fileID: 2462914938165279696}
+  - component: {fileID: 2586073946539985838}
   m_Layer: 0
   m_Name: SteamManager
   m_TagString: Untagged
@@ -57,3 +58,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26ce8f647faac1344bc6a06271ba0a2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _lobbySceneName: Home
+  _mainSceneName: Main
+--- !u!114 &2586073946539985838
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8341053069320584553}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc4ccaff1920208429cca7c350560301, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ConnectToSteamID: 0
+  options: []
