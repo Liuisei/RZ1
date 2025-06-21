@@ -15,7 +15,7 @@ EditorBuildSettings:
     path: Assets/RZ1/UsugiTest/Scene/Game.unity
     guid: 3283072bef89ae94f8d3ba2f332e7470
   - enabled: 1
-    path: Assets/RZ1/Script/Scene/Main/Main.unity
+    path: Assets/RZ1/Scene/Main.unity
     guid: a35102aa127f4e543bab344be0ca20a1
   - enabled: 1
     path: Assets/RZ1/Script/Scene/Home/Home.unity
