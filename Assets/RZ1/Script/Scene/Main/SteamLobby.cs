@@ -51,10 +51,7 @@ public class SteamLobby : MonoBehaviour
         }
 
         //ホストのアドレス（SteamID）を登録
-        SteamMatchmaking.SetLobbyData(
-            new CSteamID(pCallback.m_ulSteamIDLobby),
-            s_HostAddressKey,
-            SteamUser.GetSteamID().ToString());
+        SteamMatchmaking.SetLobbyData(new CSteamID(pCallback.m_ulSteamIDLobby),s_HostAddressKey,SteamUser.GetSteamID().ToString());
 
         //ロビーID保存(画面にロビーIDを表示させる際に使用するので変数に入れておく)
         LobbyID = pCallback.m_ulSteamIDLobby;
@@ -142,13 +139,12 @@ public class SteamLobby : MonoBehaviour
         }
 
         //ここからは接続成功クライアントに向けた処理
-        response.Approved = true;//接続を許可
 
+        response.Approved = true;//接続を許可
         //PlayerObjectを生成するかどうか
         response.CreatePlayerObject = false;
         //生成するPlayerObjectのPrefabハッシュ値。nullの場合NetworkManagerに登録したプレハブが使用される
         response.PlayerPrefabHash = null;
-
         //PlayerObjectをスポーンする位置(nullの場合Vector3.zero)
         response.Position = Vector3.zero;
         //PlayerObjectをスポーン時の回転 (nullの場合Quaternion.identity)
