@@ -2,7 +2,9 @@
     "name": "RZ1.Editor",
     "rootNamespace": "RZ1.Editor",
     "references": [],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
