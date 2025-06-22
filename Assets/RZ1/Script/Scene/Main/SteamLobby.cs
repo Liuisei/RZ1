@@ -16,7 +16,7 @@ public class SteamLobby : MonoBehaviour
 
     public ulong LobbyID { get; private set; }
 
-    [SerializeField] private string _lobbySceneName = "LiuGame";
+    [SerializeField] private string _lobbySceneName = "Game";
     [SerializeField] private string _mainSceneName = "Main";
 
     public void Start()
