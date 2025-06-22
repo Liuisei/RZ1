@@ -6,7 +6,8 @@ namespace RZ1.Editor
 {
     public class BuildSceneNavigator : EditorWindow
     {
-        [MenuItem("Tools/Scenes/Open Build Scene")]
+        //[MenuItem("Tools/Scenes/Open Build Scene")]
+        [MenuItem("Tools/Scenes/Open Build Scene %m")] // Ctrl + M で起動
         public static void ShowWindow()
         {
             GetWindow<BuildSceneNavigator>("Build Scenes");
