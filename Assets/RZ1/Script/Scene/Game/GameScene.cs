@@ -8,6 +8,7 @@ namespace Game
     {
         //プレイヤーのプレハブ
         [SerializeField] private NetworkObject m_playerPrefab;
+        [SerializeField] private Transform _spawnTransform;
 
         public override void OnNetworkSpawn()
         {
@@ -27,7 +28,7 @@ namespace Game
         public void OnClientConnected(ulong clientId)
         {
             //プレイヤーオブジェクト生成
-            var generatePos = new Vector3(-2, 1, 27);
+            var generatePos = _spawnTransform.position;
             generatePos.x = -5 + 5 * (NetworkManager.Singleton.ConnectedClients.Count % 3);
             NetworkObject playerObject = Instantiate(m_playerPrefab, generatePos, Quaternion.identity);
             //接続クライアントをOwnerにしてPlayerObjectとしてスポーン
