@@ -15,13 +15,16 @@ namespace RZ1.BehaviorTree
         private NavMeshAgent _agent;
         private bool _autoBraking = false; // 自動ブレーキを無効にするためのフラグ
         private int _currentPoint = 0; // 現在の目標地点のインデックス
+        private bool _useRandom = false; // ランダムか順番か
 
-        public NodePatrol(NavMeshAgent agent, Transform[] points, bool autoBraking)
+        public NodePatrol(NavMeshAgent agent, Transform[] points, bool autoBraking, bool useRandom = false)
         {
             _agent = agent;
             _points = points;
             _autoBraking = autoBraking;
+            _useRandom = useRandom;
         }
+
         public void Enter()
         {
             _agent.isStopped = false;
@@ -35,18 +38,26 @@ namespace RZ1.BehaviorTree
             _agent.autoBraking = _autoBraking; // 自動ブレーキの設定
             GotoNextPoint();
         }
-
-
         void GotoNextPoint()
         {
-            // エージェントが現在設定された目標地点に行くように設定します
+            if (_points.Length == 0) return;
+
+            if (_useRandom)
+            {
+                int nextPoint;
+                do
+                {
+                    nextPoint = UnityEngine.Random.Range(0, _points.Length);
+                } while (nextPoint == _currentPoint && _points.Length > 1); // 同じ場所を避ける
+                _currentPoint = nextPoint;
+            }
+            else
+            {
+                _currentPoint = (_currentPoint + 1) % _points.Length;
+            }
+
             _agent.destination = _points[_currentPoint].position;
-
-            // 配列内の次の位置を目標地点に設定し、
-            // 必要ならば出発地点にもどります
-            _currentPoint = (_currentPoint + 1) % _points.Length;
         }
-
 
         public void Exit()
         {
