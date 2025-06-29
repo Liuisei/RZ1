@@ -61,7 +61,7 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 80
@@ -100,14 +100,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3455909571
-  InScenePlacedSourceGlobalObjectIdHash: 0
+  GlobalObjectIdHash: 1344086441
+  InScenePlacedSourceGlobalObjectIdHash: 3455909571
   DeferredDespawnTick: 0
   Ownership: 1
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
+  SceneMigrationSynchronization: 0
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
   AutoObjectParentSync: 1
@@ -190,6 +190,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   _aiagent: {fileID: 7684510352732274053}
   _essVison: {fileID: 6277995157374891647}
+  _animator: {fileID: 5537313095515906647}
 --- !u!1001 &917711421498040413
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -247,6 +248,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d7e1017d73c54544c83289daee63f473, type: 3}
+--- !u!95 &5537313095515906647 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 4639870078365303306, guid: d7e1017d73c54544c83289daee63f473, type: 3}
+  m_PrefabInstance: {fileID: 917711421498040413}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &9201521754727745466 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8290567143572252647, guid: d7e1017d73c54544c83289daee63f473, type: 3}
@@ -299,6 +305,26 @@ PrefabInstance:
     - target: {fileID: 5871912790860088334, guid: 3e1499c467f7e25418f17186add31b80, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9051957833687455809, guid: 3e1499c467f7e25418f17186add31b80, type: 3}
+      propertyPath: Hangle
+      value: 39.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 9051957833687455809, guid: 3e1499c467f7e25418f17186add31b80, type: 3}
+      propertyPath: Hspeed
+      value: 1.63
+      objectReference: {fileID: 0}
+    - target: {fileID: 9051957833687455809, guid: 3e1499c467f7e25418f17186add31b80, type: 3}
+      propertyPath: Vangle
+      value: 20.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 9051957833687455809, guid: 3e1499c467f7e25418f17186add31b80, type: 3}
+      propertyPath: Vrenge
+      value: 1.41
+      objectReference: {fileID: 0}
+    - target: {fileID: 9051957833687455809, guid: 3e1499c467f7e25418f17186add31b80, type: 3}
+      propertyPath: distance
+      value: 4.73
       objectReference: {fileID: 0}
     - target: {fileID: 9116225354436892400, guid: 3e1499c467f7e25418f17186add31b80, type: 3}
       propertyPath: m_Name

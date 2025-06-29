@@ -24,6 +24,7 @@ namespace RZ1.BehaviorTree
             _autoBraking = autoBraking;
             _useRandom = useRandom;
         }
+
         public void Enter()
         {
             _agent.isStopped = false;
@@ -37,9 +38,6 @@ namespace RZ1.BehaviorTree
             _agent.autoBraking = _autoBraking; // 自動ブレーキの設定
             GotoNextPoint();
         }
-
-
-
         void GotoNextPoint()
         {
             if (_points.Length == 0) return;
@@ -60,7 +58,6 @@ namespace RZ1.BehaviorTree
 
             _agent.destination = _points[_currentPoint].position;
         }
-
 
         public void Exit()
         {

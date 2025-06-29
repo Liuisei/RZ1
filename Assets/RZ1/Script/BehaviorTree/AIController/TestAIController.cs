@@ -84,6 +84,7 @@ namespace RZ1.BehaviorTree
             {
                 return; // Only run on the server
             }
+
             if (_currentNodeUpdate != null)
             {
                 _currentNodeUpdate.Update();
