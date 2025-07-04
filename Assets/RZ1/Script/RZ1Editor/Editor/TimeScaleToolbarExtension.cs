@@ -14,8 +14,14 @@ public class TimeScaleOverlay : Overlay
         root.style.paddingLeft = 4;
         root.style.paddingRight = 4;
 
-        // 初期値（Time.timeScale を 0～10 にスケーリング）
-        int initial = Mathf.RoundToInt(Time.timeScale * 10f);
+        // 再生直後に 0 になってしまう問題を回避
+        int initial = Mathf.RoundToInt(Time.timeScale);
+        if (initial <= 0)
+        {
+            initial = 1;
+            Time.timeScale = 1f; // 明示的に初期値設定
+        }
+
         var valueLabel = new Label(initial.ToString())
         {
             style =
@@ -36,7 +42,7 @@ public class TimeScaleOverlay : Overlay
 
         slider.RegisterValueChangedCallback(evt =>
         {
-            Time.timeScale = evt.newValue / 10f;
+            Time.timeScale = evt.newValue;
             valueLabel.text = evt.newValue.ToString();
         });
 

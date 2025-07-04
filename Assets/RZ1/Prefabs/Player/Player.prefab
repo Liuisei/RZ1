@@ -79,6 +79,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   _moveSpeed: 5
+  _cameraTransform: {fileID: 1916199731975574531}
+  _playerTransform: {fileID: 4705591101337582275}
 --- !u!114 &-5527019231863536199
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -167,7 +169,7 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 112
   m_CollisionDetection: 0
 --- !u!114 &2342616281669783030
 MonoBehaviour:
