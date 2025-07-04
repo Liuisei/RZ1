@@ -3,10 +3,21 @@ using Unity.Netcode;
 using UnityEngine;
 
 /// <summary>
-/// Netcode専用の入力ハンドラー。クライアントからの入力を受け取り、サーバー上にクライアントIDごとに保存する。
+/// クライアントからの入力を収集し、サーバーに送信・保存する。
 /// </summary>
 public class NetworkInputHandler : NetworkBehaviour
 {
+    [System.Flags]
+    public enum InputButton : uint
+    {
+        None     = 0,
+        Jump     = 1 << 0,
+        Fire     = 1 << 1,
+        Interact = 1 << 2,
+        Dash     = 1 << 3,
+        // 必要に応じて追加可能
+    }
+
     public struct PlayerInputData : INetworkSerializable
     {
         public Vector2 Move;
@@ -17,20 +28,22 @@ public class NetworkInputHandler : NetworkBehaviour
             serializer.SerializeValue(ref Move);
             serializer.SerializeValue(ref Buttons);
         }
+
+        public bool IsButtonPressed(InputButton button)
+        {
+            return (Buttons & (uint)button) != 0;
+        }
     }
 
     // サーバーで各クライアントの入力を保持
     private static readonly Dictionary<ulong, PlayerInputData> _inputMap = new();
 
-    /// <summary>
-    /// 指定されたクライアントIDの入力データを取得する
-    /// </summary>
     public static bool TryGetInput(ulong clientId, out PlayerInputData input)
     {
         return _inputMap.TryGetValue(clientId, out input);
     }
 
-    // 入力アクション
+    // InputSystem のアクションマップ
     private RZ1Input _inputActions;
     private RZ1Input.DefaultActions _player;
 
@@ -38,40 +51,42 @@ public class NetworkInputHandler : NetworkBehaviour
     {
         _inputActions = new RZ1Input();
         _player = _inputActions.Default;
-        _inputActions.Enable();
     }
 
-    private void OnDestroy()
+    public override void OnNetworkSpawn()
     {
-        _inputActions?.Disable();
+        if (IsOwner)
+            _inputActions.Enable();
+    }
+
+    public override void OnNetworkDespawn()
+    {
+        if (IsOwner)
+            _inputActions.Disable();
     }
 
     private void Update()
     {
-        // オーナーのみが入力を処理
-        if (!IsOwner) return;
+        if (!IsOwner || !IsClient) return;
 
         var input = CollectInput();
 
-        // ローカルに保存（即座に反映用）
-        _inputMap[NetworkManager.Singleton.LocalClientId] = input;
+        // ローカルにも保存（ローカルプレビューなどに使用）
+        if (NetworkManager.Singleton && NetworkManager.Singleton.IsListening) _inputMap[NetworkManager.Singleton.LocalClientId] = input;
+
         // サーバーに送信
         SubmitInputServerRpc(input);
     }
 
-    /// <summary>
-    /// 現在の入力を収集する
-    /// </summary>
     private PlayerInputData CollectInput()
     {
         Vector2 move = _player.Move.ReadValue<Vector2>();
         uint buttons = 0;
 
-        // ボタン入力をビットフラグで管理
-        if (_player.Jump.IsPressed()) buttons |= 1u << 0;      // Jump
-        if (_player.Fire.IsPressed()) buttons |= 1u << 1;      // Fire
-        if (_player.Interact.IsPressed()) buttons |= 1u << 2;  // Interact
-        if (_player.Dash.IsPressed()) buttons |= 1u << 3;      // Dash
+        if (_player.Jump.IsPressed())     buttons |= (uint)InputButton.Jump;
+        if (_player.Fire.IsPressed())     buttons |= (uint)InputButton.Fire;
+        if (_player.Interact.IsPressed()) buttons |= (uint)InputButton.Interact;
+        if (_player.Dash.IsPressed())     buttons |= (uint)InputButton.Dash;
 
         return new PlayerInputData
         {
@@ -80,13 +95,10 @@ public class NetworkInputHandler : NetworkBehaviour
         };
     }
 
-    /// <summary>
-    /// サーバーに入力データを送信する
-    /// </summary>
     [ServerRpc]
     private void SubmitInputServerRpc(PlayerInputData input, ServerRpcParams rpcParams = default)
     {
-        // サーバー側で送信元クライアントの入力を保存
-        _inputMap[rpcParams.Receive.SenderClientId] = input;
+        ulong senderId = rpcParams.Receive.SenderClientId;
+        _inputMap[senderId] = input;
     }
 }

@@ -1,46 +1,41 @@
-using System;
 using Unity.Netcode;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody))]
 public class PlayerMovementController : NetworkBehaviour
 {
     [SerializeField] private float _moveSpeed = 5f;
 
     private Rigidbody _rigidbody;
+    private float _lastProcessedTime = -1f;
 
     private void Awake()
     {
-        _rigidbody = GetComponent<Rigidbody>();
     }
 
     public override void OnNetworkSpawn()
     {
-        // サーバーのみ物理制御を行うため、他はKinematicにする
-        if (!IsServer)
+        if (IsServer)
         {
-            _rigidbody.isKinematic = true;
+            _rigidbody = GetComponent<Rigidbody>();
         }
     }
 
-    private void Update()
+    private void Update() // Updateの代わりに
     {
-        if (!IsHost) return;
+        if (!IsServer) return; // IsHostからIsServerに変更
 
-        // 入力取得（OwnerClientId = このプレイヤーのクライアント）
         if (NetworkInputHandler.TryGetInput(OwnerClientId, out var input))
         {
-            Vector3 move = new Vector3(input.Move.x, 0, input.Move.y) * _moveSpeed;
-
-            // 現在のY速度を保持して、横方向だけ移動
-            Vector3 velocity = new Vector3(move.x, _rigidbody.linearVelocity.y, move.z);
-            _rigidbody.linearVelocity = velocity;
-            Debug.Log($"Player {OwnerClientId} moving with velocity: {velocity}");
+            Debug.Log(OwnerClientId + " : " + input);
+            // 入力がある時のみ速度を更新
+            if (input.Move.magnitude > 0.1f) // 入力の閾値
+            {
+                Vector3 move = new Vector3(input.Move.x, 0, input.Move.y) * _moveSpeed;
+                // Vector3 velocity = new Vector3(move.x, _rigidbody.linearVelocity.y, move.z);
+                //_rigidbody.AddForce(velocity);
+                transform.position += move * 0.01f; // ここは実際の移動処理に置き換える必要があります
+            }
+            // 入力が0なら自然に減速（Rigidbodyのdragに任せる）
         }
-    }
-
-    private void FixedUpdate()
-    {
-
     }
 }
