@@ -236,9 +236,9 @@ MonoBehaviour:
       data:
         _idleClip: {fileID: 7400000, guid: ae6d91d47faf9254889f64d712072a83, type: 2}
         _walkClip: {fileID: 7400000, guid: 1281dcdeefd633642995d7fcdc68f934, type: 2}
-        _runClip: {fileID: 7400000, guid: e0cdaf2689d681f4e94e15b66f464e1c, type: 2}
-        _walkThreshold: 10.89
-        _runThreshold: 21.23
+        _runClip: {fileID: 7400000, guid: 6fe1d0844d77376429648043c0b78d33, type: 2}
+        _walkThreshold: 3
+        _runThreshold: 7
     - rid: 5083283162551288015
       type: {class: ActionAnimationTrack, ns: , asm: Assembly-CSharp}
       data:
