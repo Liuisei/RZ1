@@ -1,34 +1,45 @@
+using System;
 using Unity.Netcode;
 using UnityEngine;
 
 public class PlayerMovementController : NetworkBehaviour
 {
-    [SerializeField] private float _moveSpeed = 5f;
+    [SerializeField] private float _walkSpeed = 3f;
+    [SerializeField] private float _runSpeed = 6f;
+
     [SerializeField] private Transform _cameraTransform; // シーン内のメインカメラをアタッチする
     [SerializeField] private Transform _playerTransform;
 
     private Rigidbody _rigidbody;
+    private CharacterAnimationController _characterAnimationController;
+    private MovementAnimationTrack _movementTrack;
 
     public override void OnNetworkSpawn()
     {
+        _characterAnimationController = GetComponent<CharacterAnimationController>();
+        _movementTrack = _characterAnimationController.GetTrack<MovementAnimationTrack>();
         if (IsServer)
         {
             _rigidbody = GetComponent<Rigidbody>();
         }
     }
 
+    private void Update()
+    {
+        var speed = _rigidbody.linearVelocity.magnitude;
+        _movementTrack?.UpdateMoveSpeed(speed);
+    }
+
     private void FixedUpdate()
     {
-        if (!IsServer || _rigidbody == null) return;
+        if (!IsServer || !_rigidbody) return;
 
         if (NetworkInputHandler.TryGetInput(OwnerClientId, out var input))
         {
             if (input.Move.magnitude > 0.1f)
             {
-                // 入力をカメラの向きに変換
                 Vector3 inputDir = new Vector3(input.Move.x, 0f, input.Move.y);
 
-                // カメラの正面・右方向（地面に投影してY=0）
                 Vector3 camForward = _cameraTransform.forward;
                 Vector3 camRight = _cameraTransform.right;
                 camForward.y = 0f;
@@ -38,12 +49,13 @@ public class PlayerMovementController : NetworkBehaviour
 
                 Vector3 moveDir = (camForward * inputDir.z + camRight * inputDir.x).normalized;
 
-                Vector3 velocity = moveDir * _moveSpeed;
-                velocity.y = _rigidbody.linearVelocity.y; // Y速度は維持（ジャンプや落下など）
+                float targetSpeed = input.IsButtonPressed(NetworkInputHandler.InputButton.Dash) ? _runSpeed : _walkSpeed;
+
+                Vector3 velocity = moveDir * targetSpeed;
+                velocity.y = _rigidbody.linearVelocity.y;
 
                 _rigidbody.linearVelocity = velocity;
 
-                // プレイヤーの向きを移動方向に合わせる
                 if (moveDir != Vector3.zero)
                 {
                     Quaternion targetRotation = Quaternion.LookRotation(moveDir);
