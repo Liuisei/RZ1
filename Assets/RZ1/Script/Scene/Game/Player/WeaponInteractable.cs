@@ -5,9 +5,14 @@ public class WeaponInteractable : InteractableBase
 {
     [SerializeField] private string _weaponName = "DefaultWeapon";
     [SerializeField] private AttackBase _weaponPrefab; // 武器のプレハブ
+    [SerializeField] private NetworkObject _networkObject;
+    [SerializeField] private Rigidbody _rigidbody;
+
+    public NetworkObject NetworkObject => _networkObject;
 
     public override void Interact(ulong interactorClientId)
     {
+        Debug.Log("WeaponInteractable Interact called!");
         if (NetworkManager.Singleton.ConnectedClients.TryGetValue(interactorClientId, out var client))
         {
             var playerObject = client.PlayerObject; // = NetworkObject

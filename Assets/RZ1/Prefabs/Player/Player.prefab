@@ -228,23 +228,23 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _tracks:
-  - rid: 5083283162551288014
-  - rid: 5083283162551288015
+  - rid: 5083283205490475195
+  - rid: 5083283205490475196
   references:
     version: 2
     RefIds:
-    - rid: 5083283162551288014
-      type: {class: MovementAnimationTrack, ns: , asm: Assembly-CSharp}
+    - rid: 5083283205490475195
+      type: {class: ActionAnimationTrack, ns: , asm: Game}
+      data:
+        _mask: {fileID: 0}
+    - rid: 5083283205490475196
+      type: {class: MovementAnimationTrack, ns: , asm: Game}
       data:
         _idleClip: {fileID: 7400000, guid: ae6d91d47faf9254889f64d712072a83, type: 2}
         _walkClip: {fileID: 7400000, guid: 1281dcdeefd633642995d7fcdc68f934, type: 2}
         _runClip: {fileID: 7400000, guid: 6fe1d0844d77376429648043c0b78d33, type: 2}
-        _walkThreshold: 3
-        _runThreshold: 7
-    - rid: 5083283162551288015
-      type: {class: ActionAnimationTrack, ns: , asm: Assembly-CSharp}
-      data:
-        _mask: {fileID: 31900000, guid: a8665a5f4742f8247ae93521ca86cf4a, type: 2}
+        _walkThreshold: 2
+        _runThreshold: 5
 --- !u!114 &2960205109844237550
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -260,6 +260,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   _currentAttack: {fileID: 0}
   _handTransform: {fileID: 5681452484862133240}
+  _ownerNetworkObject: {fileID: 1410118551490010664}
 --- !u!114 &-8607496288673911011
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -274,7 +275,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   _camera: {fileID: 0}
-  _interactDistance: 3
+  _interactDistance: 6
   _interactableLayer:
     serializedVersion: 2
     m_Bits: 4294967295
