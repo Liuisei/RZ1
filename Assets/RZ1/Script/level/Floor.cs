@@ -1,32 +1,61 @@
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Floor : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-}
-
-public struct FloorData
-{
     public int FloorId;
     public string FloorName;
-    public List<int> OpenDoor; 
+    [SerializeField] private List<Door> _openDoors;
+    public GuildType GuildType;
 
-    public FloorData(int floorId, string floorName, List<int> openDoor)
+    /// <summary>
+    /// 上から時計回り1234
+    /// </summary>
+    /// <param name="floorIndex"></param>
+    public void OpenDoor(Vector2Int openDoorDir = new Vector2Int())
     {
-        FloorId = floorId;
-        FloorName = floorName;
-        OpenDoor = openDoor;
+        int floorIndex = 0;
+        if (openDoorDir == Vector2Int.up)
+        {
+            floorIndex = 1;
+        }
+        else if (openDoorDir == Vector2Int.right)
+        {
+            floorIndex = 2;
+        }
+        else if (openDoorDir == Vector2Int.down)
+        {
+            floorIndex = 3;
+        }
+        else if (openDoorDir == Vector2Int.left)
+        {
+            floorIndex = 4;
+        }
+        else if (openDoorDir == default)
+        {
+            floorIndex = 0;
+        }
+
+        if (floorIndex > 0)
+        {
+            Door door = _openDoors[(floorIndex) % 4];
+            door.HideDoor.gameObject.SetActive(false);
+            if (door.Showhallway != null)
+            {
+                door.Showhallway.gameObject.SetActive(true);
+            }
+        }
+    }
+
+    [Serializable]
+    private class Door
+    {
+        public Transform HideDoor;
+        public Transform Showhallway;
     }
 }
+
+
+

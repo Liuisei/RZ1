@@ -44,3 +44,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77e29c25c0834e74da265497bb284136, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _firstRoomPrefab: {fileID: 7835011576654753225, guid: f6e1632e3b31a9245a24c47942f25f11, type: 3}
+  _floorPrefabs:
+  - {fileID: 358103144106479565, guid: 9bcc2f433e9235447bcfae5945e6b648, type: 3}
+  _goalPrefab: {fileID: 7835011576654753225, guid: b83110e2faa7b6f4c93c7271ed201636, type: 3}
+  _floorToFloorRange: 20
+  _floorCountToGoal: 10
