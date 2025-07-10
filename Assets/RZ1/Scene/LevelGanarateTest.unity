@@ -119,6 +119,17 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!114 &938092764 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 4707713537795981749, guid: bfc3a22d2c7956444bb79ece31e16bb9, type: 3}
+  m_PrefabInstance: {fileID: 8737185999812149248}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1020878765
 GameObject:
   m_ObjectHideFlags: 0
@@ -426,21 +437,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8927672085218186465, guid: bfc3a22d2c7956444bb79ece31e16bb9, type: 3}
-      propertyPath: _goalPrefab
+      propertyPath: navMeshSurface
       value: 
-      objectReference: {fileID: 7835011576654753225, guid: fee63c13ec666e942bf78ccdd5d95767, type: 3}
-    - target: {fileID: 8927672085218186465, guid: bfc3a22d2c7956444bb79ece31e16bb9, type: 3}
-      propertyPath: _srartRoomPrefab
-      value: 
-      objectReference: {fileID: 7835011576654753225, guid: f6e1632e3b31a9245a24c47942f25f11, type: 3}
-    - target: {fileID: 8927672085218186465, guid: bfc3a22d2c7956444bb79ece31e16bb9, type: 3}
-      propertyPath: _floorToFloorRange
-      value: 25
-      objectReference: {fileID: 0}
-    - target: {fileID: 8927672085218186465, guid: bfc3a22d2c7956444bb79ece31e16bb9, type: 3}
-      propertyPath: '_floorPrefabs.Array.data[0]'
-      value: 
-      objectReference: {fileID: 7835011576654753225, guid: 72e0a1fc6222dc64fa36a081bef0b2fb, type: 3}
+      objectReference: {fileID: 938092764}
     - target: {fileID: 8999745464504753208, guid: bfc3a22d2c7956444bb79ece31e16bb9, type: 3}
       propertyPath: m_Name
       value: LevelGenerator

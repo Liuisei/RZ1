@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4918529991585741247}
   - component: {fileID: 8927672085218186465}
+  - component: {fileID: 4707713537795981749}
   m_Layer: 0
   m_Name: LevelGenerator
   m_TagString: Untagged
@@ -44,9 +45,41 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 77e29c25c0834e74da265497bb284136, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _firstRoomPrefab: {fileID: 7835011576654753225, guid: f6e1632e3b31a9245a24c47942f25f11, type: 3}
+  _srartRoomPrefab: {fileID: 7835011576654753225, guid: f6e1632e3b31a9245a24c47942f25f11, type: 3}
   _floorPrefabs:
-  - {fileID: 358103144106479565, guid: 9bcc2f433e9235447bcfae5945e6b648, type: 3}
-  _goalPrefab: {fileID: 7835011576654753225, guid: b83110e2faa7b6f4c93c7271ed201636, type: 3}
-  _floorToFloorRange: 20
+  - {fileID: 7835011576654753225, guid: 72e0a1fc6222dc64fa36a081bef0b2fb, type: 3}
+  _goalPrefab: {fileID: 7835011576654753225, guid: fee63c13ec666e942bf78ccdd5d95767, type: 3}
+  _floorToFloorRange: 25
   _floorCountToGoal: 10
+--- !u!114 &4707713537795981749
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8999745464504753208}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SerializedVersion: 0
+  m_AgentTypeID: 0
+  m_CollectObjects: 0
+  m_Size: {x: 10, y: 10, z: 10}
+  m_Center: {x: 0, y: 2, z: 0}
+  m_LayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_UseGeometry: 0
+  m_DefaultArea: 0
+  m_GenerateLinks: 0
+  m_IgnoreNavMeshAgent: 1
+  m_IgnoreNavMeshObstacle: 1
+  m_OverrideTileSize: 0
+  m_TileSize: 256
+  m_OverrideVoxelSize: 0
+  m_VoxelSize: 0.16666667
+  m_MinRegionArea: 2
+  m_NavMeshData: {fileID: 0}
+  m_BuildHeightMesh: 0

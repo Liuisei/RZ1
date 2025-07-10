@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
+using Unity.AI.Navigation;
 using UnityEngine;
 
 public class LevelGenerator : MonoBehaviour
@@ -9,6 +10,7 @@ public class LevelGenerator : MonoBehaviour
     [SerializeField] private Floor _goalPrefab;
     [SerializeField] private int _floorToFloorRange = 20;
     [SerializeField] private int _floorCountToGoal = 10;
+    [SerializeField] private NavMeshSurface navMeshSurface;
     private Vector2Int _startPos;
     private List<Vector2Int> _startToEndList = new();
     private Vector2Int _endPos;
@@ -26,6 +28,11 @@ public class LevelGenerator : MonoBehaviour
         GenerateStartFloor();
         await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.Space));
         await GenerateStartToGoalPos();
+        await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.Space));
+        navMeshSurface.BuildNavMesh();
+        await UniTask.WaitUntil(() => Input.GetKeyDown(KeyCode.Space));
+        await navMeshSurface.UpdateNavMesh(navMeshSurface.navMeshData);
+
     }
     void GenerateStartFloor()
     {
@@ -83,6 +90,7 @@ public class LevelGenerator : MonoBehaviour
     private void GenerateGuild(int x, int y, Floor floor, Vector2Int openDoorDir = default)
     {
         Floor newFloor = Instantiate(floor, new Vector3(x * _floorToFloorRange, 0, y * _floorToFloorRange), Quaternion.identity);
+        newFloor.transform.SetParent(transform);
         newFloor.OpenDoor(openDoorDir);
         _floorMap[(x, y)] = newFloor;
     }
