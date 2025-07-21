@@ -86,6 +86,7 @@ MonoBehaviour:
   _runSpeed: 6
   _cameraTransform: {fileID: 1916199731975574531}
   _playerTransform: {fileID: 4705591101337582275}
+  _animator: {fileID: -3690541304161609950}
 --- !u!114 &-5527019231863536199
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -203,7 +204,7 @@ Animator:
   m_GameObject: {fileID: 5938914382287294474}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: b69174d668ba02d44b14a084b217670a, type: 3}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: 1693a59e306005540b3d9778b72251c1, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

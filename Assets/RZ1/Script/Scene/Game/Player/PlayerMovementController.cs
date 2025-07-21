@@ -4,20 +4,22 @@ using UnityEngine;
 
 public class PlayerMovementController : NetworkBehaviour
 {
+    private static readonly int Speed = Animator.StringToHash("Speed");
     [SerializeField] private float _walkSpeed = 3f;
     [SerializeField] private float _runSpeed = 6f;
 
     [SerializeField] private Transform _cameraTransform; // シーン内のメインカメラをアタッチする
     [SerializeField] private Transform _playerTransform;
+    [SerializeField] private Animator _animator;
 
     private Rigidbody _rigidbody;
-    private CharacterAnimationController _characterAnimationController;
-    private MovementAnimationTrack _movementTrack;
+    // private CharacterAnimationController _characterAnimationController;
+    // private MovementAnimationTrack _movementTrack;
 
     public override void OnNetworkSpawn()
     {
-        _characterAnimationController = GetComponent<CharacterAnimationController>();
-        _movementTrack = _characterAnimationController.GetTrack<MovementAnimationTrack>();
+        // _characterAnimationController = GetComponent<CharacterAnimationController>();
+        // _movementTrack = _characterAnimationController.GetTrack<MovementAnimationTrack>();
         if (IsServer)
         {
             _rigidbody = GetComponent<Rigidbody>();
@@ -27,7 +29,12 @@ public class PlayerMovementController : NetworkBehaviour
     private void Update()
     {
         var speed = _rigidbody.linearVelocity.magnitude;
-        _movementTrack?.UpdateMoveSpeed(speed);
+        //_movementTrack?.UpdateMoveSpeed(speed);
+        Debug.Log(speed);
+        if (_animator)
+        {
+            _animator.SetFloat(Speed, speed, 0.1f, Time.deltaTime);
+        }
     }
 
     private void FixedUpdate()
