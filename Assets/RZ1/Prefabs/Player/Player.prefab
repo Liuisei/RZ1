@@ -15,8 +15,6 @@ GameObject:
   - component: {fileID: 3804806424842327656}
   - component: {fileID: 6816669833871642258}
   - component: {fileID: 2342616281669783030}
-  - component: {fileID: -3690541304161609950}
-  - component: {fileID: -5341539681504956332}
   - component: {fileID: 2960205109844237550}
   - component: {fileID: -8607496288673911011}
   m_Layer: 0
@@ -84,9 +82,16 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   _walkSpeed: 3
   _runSpeed: 6
+  _jumpHeight: 3
   _cameraTransform: {fileID: 1916199731975574531}
   _playerTransform: {fileID: 4705591101337582275}
-  _animator: {fileID: -3690541304161609950}
+  _animator: {fileID: 7329246525534508513}
+  _groundMask:
+    serializedVersion: 2
+    m_Bits: 0
+  _groundDistance: 0.2
+  _isGrounded: 0
+  _groundCheckOffset: {x: 0, y: 1, z: 0}
 --- !u!114 &-5527019231863536199
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -194,58 +199,6 @@ MonoBehaviour:
   UseRigidBodyForMotion: 0
   AutoUpdateKinematicState: 1
   AutoSetKinematicOnDespawn: 1
---- !u!95 &-3690541304161609950
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5938914382287294474}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: b69174d668ba02d44b14a084b217670a, type: 3}
-  m_Controller: {fileID: 9100000, guid: 1693a59e306005540b3d9778b72251c1, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
---- !u!114 &-5341539681504956332
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5938914382287294474}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6c8975b2e7c87a445b1c7fc4dd3e8105, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _tracks:
-  - rid: 5083283205490475195
-  - rid: 5083283205490475196
-  references:
-    version: 2
-    RefIds:
-    - rid: 5083283205490475195
-      type: {class: ActionAnimationTrack, ns: , asm: Game}
-      data:
-        _mask: {fileID: 0}
-    - rid: 5083283205490475196
-      type: {class: MovementAnimationTrack, ns: , asm: Game}
-      data:
-        _idleClip: {fileID: 7400000, guid: ae6d91d47faf9254889f64d712072a83, type: 2}
-        _walkClip: {fileID: 7400000, guid: 1281dcdeefd633642995d7fcdc68f934, type: 2}
-        _runClip: {fileID: 7400000, guid: 6fe1d0844d77376429648043c0b78d33, type: 2}
-        _walkThreshold: 2
-        _runThreshold: 5
 --- !u!114 &2960205109844237550
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -262,6 +215,7 @@ MonoBehaviour:
   _currentAttack: {fileID: 0}
   _handTransform: {fileID: 5681452484862133240}
   _ownerNetworkObject: {fileID: 1410118551490010664}
+  _animator: {fileID: 7329246525534508513}
 --- !u!114 &-8607496288673911011
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -289,6 +243,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4705591101337582275}
+  - component: {fileID: 7329246525534508513}
   m_Layer: 0
   m_Name: Model
   m_TagString: Untagged
@@ -312,6 +267,28 @@ Transform:
   - {fileID: 5681452484862091536}
   m_Father: {fileID: 5116662638544341274}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!95 &7329246525534508513
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6266925230639407842}
+  m_Enabled: 1
+  m_Avatar: {fileID: 9000000, guid: b69174d668ba02d44b14a084b217670a, type: 3}
+  m_Controller: {fileID: 9100000, guid: 1693a59e306005540b3d9778b72251c1, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &8231130575859962410
 GameObject:
   m_ObjectHideFlags: 0
