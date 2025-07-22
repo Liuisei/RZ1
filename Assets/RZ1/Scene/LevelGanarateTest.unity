@@ -440,6 +440,22 @@ PrefabInstance:
       propertyPath: navMeshSurface
       value: 
       objectReference: {fileID: 938092764}
+    - target: {fileID: 8927672085218186465, guid: bfc3a22d2c7956444bb79ece31e16bb9, type: 3}
+      propertyPath: _floorToFloorRange
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 8927672085218186465, guid: bfc3a22d2c7956444bb79ece31e16bb9, type: 3}
+      propertyPath: _floorPrefabs.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8927672085218186465, guid: bfc3a22d2c7956444bb79ece31e16bb9, type: 3}
+      propertyPath: '_floorPrefabs.Array.data[0]'
+      value: 
+      objectReference: {fileID: 7835011576654753225, guid: dc48b289feaf00645b9776cd07906e5c, type: 3}
+    - target: {fileID: 8927672085218186465, guid: bfc3a22d2c7956444bb79ece31e16bb9, type: 3}
+      propertyPath: '_floorPrefabs.Array.data[1]'
+      value: 
+      objectReference: {fileID: 7835011576654753225, guid: bfc627f95dd80b7469f4ea773c16c0c8, type: 3}
     - target: {fileID: 8999745464504753208, guid: bfc3a22d2c7956444bb79ece31e16bb9, type: 3}
       propertyPath: m_Name
       value: LevelGenerator

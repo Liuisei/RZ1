@@ -55,8 +55,8 @@ public class LevelGenerator : MonoBehaviour
 
             if (candidates.Count > 0)
             {
-                //Floor floor = _floorPrefabs[Random.Range(0, _floorPrefabs.Length)];
-                Floor floor = _floorPrefabs[0];
+                Floor floor = _floorPrefabs[Random.Range(0, _floorPrefabs.Length)];
+                //Floor floor = _floorPrefabs[0];
                 (Vector2Int, Vector2Int) selectedCandidate = candidates[Random.Range(0, candidates.Count)];
                 Vector2Int next = selectedCandidate.Item1;
                 _floorMap[(current.x, current.y)].OpenDoor(-selectedCandidate.Item2);

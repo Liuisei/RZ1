@@ -1,14 +1,70 @@
-using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Floor : MonoBehaviour
 {
-    public int FloorId;
-    public string FloorName;
-    [SerializeField] private List<Door> _openDoors;
+    [SerializeField] private string _floorName;
+    [SerializeField] private Transform _tilesParent;
+    [SerializeField] private Transform _wallsParent;
+    [Range(0, 100)][SerializeField] private int _tileRange;
+    [Range(0, 100)][SerializeField] private int _hallwayRange;
+    private List<Door> _openDoors;
+    [SerializeField] private GameObject _wallPrefab;
+    [SerializeField] private GameObject _tilePrefab;
+    [SerializeField] private GulidCellMeshData[] _wallMeshs;
+    [SerializeField] private GulidCellMeshData[] _tileMeshs;
+    [SerializeField] private int _tileToTileRange = 5;
+
+    private Dictionary<(int x, int y), GameObject> _gulitTile;
+
+    private int _tileSideLangh => _tileRange * 2 + 1;
+
     public GuildType GuildType;
+
+    [ContextMenu("Generate")]
+    public void GenerateFloorTile()
+    {
+        Clear();
+        _gulitTile = new Dictionary<(int x, int y), GameObject>();
+        AllTileGenerate();
+        GenerateWall(0, 0);
+    }
+    public void AllTileGenerate()
+    {
+        for (int x = -_tileRange; x <= _tileRange; x++)
+        {
+            for (int y = -_tileRange; y <= _tileRange; y++)
+            {
+                GenerateTile(x, y);
+            }
+        }
+    }
+    public void GenerateTile(int x, int y)
+    {
+        var a = Instantiate(_tilePrefab, transform);
+        a.transform.localPosition = new Vector3(x * _tileToTileRange, 0, y * _tileToTileRange);
+        a.name = $"Tile({x},{y})";
+        _gulitTile[(x, y)] = a;
+    }
+    public void GenerateWall(int x,int y)
+    {
+        var a = Instantiate(_wallPrefab, transform);
+        a.transform.localPosition = new Vector3(x * _tileToTileRange, 0, y * _tileToTileRange);
+        a.name = $"wall({x},{y})";
+    }
+
+    [ContextMenu("Clear")]
+    public void Clear()
+    {
+        if (_gulitTile == null) return;
+        Debug.Log(_gulitTile.Count);
+        foreach (var tile in _gulitTile)
+        {
+            DestroyImmediate(tile.Value);
+        }
+
+    }
 
     /// <summary>
     /// 上から時計回り1234
@@ -54,6 +110,13 @@ public class Floor : MonoBehaviour
     {
         public Transform HideDoor;
         public Transform Showhallway;
+    }
+
+    [Serializable]
+    private class GulidCellMeshData
+    {
+        public Mesh Mesh;
+        public int Probability;
     }
 }
 
