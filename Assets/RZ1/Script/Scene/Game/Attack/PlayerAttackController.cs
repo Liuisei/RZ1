@@ -3,18 +3,32 @@ using UnityEngine;
 
 public class PlayerAttackController : NetworkBehaviour
 {
+    private static readonly int Attack = Animator.StringToHash("Attack");
     [SerializeField] private AttackBase _currentAttack;
     [SerializeField] private Transform _handTransform;
     [SerializeField] private NetworkObject _ownerNetworkObject;
+    [SerializeField] private Animator _animator;
+    private bool _hasAttackedThisPress = false;
 
     private void FixedUpdate()
     {
         if (!IsServer) return;
+
         if (NetworkInputHandler.TryGetInput(OwnerClientId, out var input))
         {
             if (input.IsButtonPressed(NetworkInputHandler.InputButton.Fire))
             {
-                _currentAttack?.StartAttack();
+                if (!_hasAttackedThisPress)
+                {
+                    _hasAttackedThisPress = true;
+
+                    _currentAttack?.StartAttack();
+                    _animator?.SetTrigger(Attack);
+                }
+            }
+            else
+            {
+                _hasAttackedThisPress = false; // ボタンを離したらリセット
             }
         }
     }

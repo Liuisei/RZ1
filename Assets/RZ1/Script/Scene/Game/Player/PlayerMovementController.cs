@@ -7,19 +7,21 @@ public class PlayerMovementController : NetworkBehaviour
     private static readonly int Speed = Animator.StringToHash("Speed");
     [SerializeField] private float _walkSpeed = 3f;
     [SerializeField] private float _runSpeed = 6f;
+    [SerializeField] private float _jumpHeight = 3f;
 
     [SerializeField] private Transform _cameraTransform; // シーン内のメインカメラをアタッチする
     [SerializeField] private Transform _playerTransform;
     [SerializeField] private Animator _animator;
+    [SerializeField] private LayerMask _groundMask;
+    [SerializeField] private float _groundDistance = 0.2f;
+    [SerializeField] private bool _isGrounded;
+    [SerializeField] private Vector3 _groundCheckOffset = Vector3.up * 1;
 
     private Rigidbody _rigidbody;
-    // private CharacterAnimationController _characterAnimationController;
-    // private MovementAnimationTrack _movementTrack;
+    private bool _isJumpButtonPressed;
 
     public override void OnNetworkSpawn()
     {
-        // _characterAnimationController = GetComponent<CharacterAnimationController>();
-        // _movementTrack = _characterAnimationController.GetTrack<MovementAnimationTrack>();
         if (IsServer)
         {
             _rigidbody = GetComponent<Rigidbody>();
@@ -28,13 +30,16 @@ public class PlayerMovementController : NetworkBehaviour
 
     private void Update()
     {
-        var speed = _rigidbody.linearVelocity.magnitude;
-        //_movementTrack?.UpdateMoveSpeed(speed);
-        Debug.Log(speed);
+        //水平方向のRigidBody速度を計算
+        if (!_rigidbody) return;
         if (_animator)
         {
-            _animator.SetFloat(Speed, speed, 0.1f, Time.deltaTime);
+            float horizontalSpeed = Mathf.Abs(_rigidbody.linearVelocity.x) + Mathf.Abs(_rigidbody.linearVelocity.z);
+            _animator.SetFloat(Speed, horizontalSpeed, 0.1f, Time.deltaTime);
         }
+
+        //地面に接地しているかどうかレイを飛ばして確認
+        _isGrounded = Physics.Raycast(_playerTransform.position + _groundCheckOffset, Vector3.down, _groundDistance, _groundMask);
     }
 
     private void FixedUpdate()
@@ -68,6 +73,17 @@ public class PlayerMovementController : NetworkBehaviour
                     Quaternion targetRotation = Quaternion.LookRotation(moveDir);
                     _playerTransform.rotation = Quaternion.Slerp(_playerTransform.rotation, targetRotation, Time.fixedDeltaTime * 10f);
                 }
+            }
+
+            // ジャンプ処理
+            if (input.IsButtonPressed(NetworkInputHandler.InputButton.Jump))
+            {
+                Debug.Log("Jump button pressed");
+            }
+            if (input.IsButtonPressed(NetworkInputHandler.InputButton.Jump) && _isGrounded)
+            {
+                // ジャンプ処理
+                _rigidbody.AddForce(Vector3.up * _jumpHeight, ForceMode.Impulse);
             }
         }
     }
