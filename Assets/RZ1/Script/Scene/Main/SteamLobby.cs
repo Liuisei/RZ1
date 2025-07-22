@@ -16,8 +16,8 @@ public class SteamLobby : MonoBehaviour
 
     public ulong LobbyID { get; private set; }
 
-    [SerializeField] private string _lobbySceneName = "Game";
-    [SerializeField] private string _mainSceneName = "Main";
+    [SerializeField] private string _titleSceneName = "Main";
+    [SerializeField] private string _inGameSceneName = "Game";
 
     public void Start()
     {
@@ -61,7 +61,7 @@ public class SteamLobby : MonoBehaviour
         //ホスト開始
         NetworkManager.Singleton.StartHost();
         //シーンを切り替え
-        NetworkManager.Singleton.SceneManager.LoadScene(_lobbySceneName, LoadSceneMode.Single);
+        NetworkManager.Singleton.SceneManager.LoadScene(_inGameSceneName, LoadSceneMode.Single);
 
         Debug.Log($"ロビーを作成しました。ID: {LobbyID}");
     }
@@ -163,7 +163,7 @@ public class SteamLobby : MonoBehaviour
         //ネットワークマネージャーを破棄（これで新しくNetworkManagerを作る（使う）ことができる）
         NetworkManager.Singleton.Shutdown();
         //メインシーンに戻る
-        SceneManager.LoadScene(_mainSceneName);
+        SceneManager.LoadScene(_titleSceneName);
     }
 
     //簡易的なシングルトン

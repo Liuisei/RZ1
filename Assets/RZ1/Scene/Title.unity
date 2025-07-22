@@ -671,8 +671,12 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 2462914938165279696, guid: 6aad24c127f87864b974b32bb7b90ba0, type: 3}
+      propertyPath: _mainSceneName
+      value: Title
+      objectReference: {fileID: 0}
+    - target: {fileID: 2462914938165279696, guid: 6aad24c127f87864b974b32bb7b90ba0, type: 3}
       propertyPath: _lobbySceneName
-      value: Game
+      value: InGame
       objectReference: {fileID: 0}
     - target: {fileID: 8341053069320584553, guid: 6aad24c127f87864b974b32bb7b90ba0, type: 3}
       propertyPath: m_Name
