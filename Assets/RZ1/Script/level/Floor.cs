@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Floor : MonoBehaviour
@@ -22,13 +23,11 @@ public class Floor : MonoBehaviour
 
     public GuildType GuildType;
 
-    [ContextMenu("Generate")]
-    public void GenerateFloorTile()
+    [ContextMenu("TileReset")]
+    public void TileReset()
     {
-        Clear();
-        _gulitTile = new Dictionary<(int x, int y), GameObject>();
+        ClearTile();
         AllTileGenerate();
-        GenerateWall(0, 0);
     }
     public void AllTileGenerate()
     {
@@ -45,26 +44,65 @@ public class Floor : MonoBehaviour
         var a = Instantiate(_tilePrefab, transform);
         a.transform.localPosition = new Vector3(x * _tileToTileRange, 0, y * _tileToTileRange);
         a.name = $"Tile({x},{y})";
-        _gulitTile[(x, y)] = a;
-    }
-    public void GenerateWall(int x,int y)
-    {
-        var a = Instantiate(_wallPrefab, transform);
-        a.transform.localPosition = new Vector3(x * _tileToTileRange, 0, y * _tileToTileRange);
-        a.name = $"wall({x},{y})";
+        a.transform.SetParent(_tilesParent);
     }
 
-    [ContextMenu("Clear")]
-    public void Clear()
+    [ContextMenu("WallReset")]
+    public void WallReset()
     {
-        if (_gulitTile == null) return;
-        Debug.Log(_gulitTile.Count);
-        foreach (var tile in _gulitTile)
+        ClearWall();
+        AllWallGenerate();
+    }
+    public void AllWallGenerate()
+    {
+        int min = -_tileRange;
+        int max = _tileRange;
+
+        for (int i = min; i <= max; i++)
         {
-            DestroyImmediate(tile.Value);
+            GenerateWall(i, max + 1);     // Top
+            GenerateWall(i, min - 1);     // Bottom
+            GenerateWall(max + 1, i);     // Right
+            GenerateWall(min - 1, i);     // Left
         }
-
     }
+
+    public void GenerateWall(int x, int y)
+    {
+        var wall = Instantiate(_wallPrefab, _wallsParent);
+        wall.transform.localPosition = new Vector3(x * _tileToTileRange, 0, y * _tileToTileRange);
+        wall.name = $"Wall({x},{y})";
+    }
+
+    [ContextMenu("ClearTile")]
+    public void ClearTile()
+    {
+        var tileChildList = _tilesParent.GetComponentsInChildren<Transform>(true).Skip(1).ToArray();
+
+        foreach (var t in tileChildList)
+        {
+            if (t != null)
+            {
+                DestroyImmediate(t.gameObject);
+            }
+        }
+    }
+    [ContextMenu("ClearWall")]
+    public void ClearWall()
+    {
+        var wallChildList = _wallsParent.GetComponentsInChildren<Transform>(true).Skip(1).ToArray();
+        foreach (var t in wallChildList)
+        {
+            if (t != null)
+            {
+                DestroyImmediate(t.gameObject);
+            }
+        }
+    }
+
+
+
+
 
     /// <summary>
     /// 上から時計回り1234
